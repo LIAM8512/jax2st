@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JAX 车载智能副驾 - 2026全网联调版</title>
+    <title>JAX 车载智能副驾 - V4.0 语音全闭环版</title>
     <style>
         :root {
             --bg-dark: #0b0e14;
@@ -175,54 +175,95 @@
 <div class="workspace">
     <div class="sidebar">
         <div>
-            <h3 class="panel-title">JAX 内核校准面板</h3>
+            <h3 class="panel-title">JAX 语音控制面板</h3>
             <div class="config-group" style="margin-top: 12px;">
                 <label>长官的专用 API KEY</label>
-                <input type="password" id="apiKeyInput" value="" placeholder="直接在此输入以 AQ 开头的密钥...">
+                <input type="password" id="apiKeyInput" value="" placeholder="输入以 AQ 开头的密钥...">
             </div>
         </div>
 
         <div>
-            <h3 class="panel-title">车载硬件总线状态</h3>
+            <h3 class="panel-title">系统状态总线</h3>
             <div class="config-group" style="margin-top: 12px; gap: 10px;">
                 <button class="btn-hardware" id="ignitionBtn" onclick="toggleIgnition()">🔌 车辆点火 (ACC ON)</button>
                 <div class="status-item">
-                    <span>车载12V总线供电</span>
+                    <span>车载总线供电</span>
                     <div class="indicator" id="powerLed"></div>
                 </div>
                 <div class="status-item">
-                    <span>JAX API 核心引擎</span>
-                    <div class="indicator" id="apiLed"></div>
+                    <span>麦克风/耳机总线</span>
+                    <div class="indicator" id="audioLed"></div>
                 </div>
             </div>
+            <button class="btn-hardware" style="margin-top: 15px; background: #3b4252;" onclick="clearJaxMemory()">🧹 清除记忆缓存</button>
         </div>
     </div>
 
     <div class="main-display">
         <div class="screen-header">
-            <h2 style="margin:0; font-size: 18px; letter-spacing: 1px;">JAX 车载交互系统 V2.0 (网络优化版)</h2>
+            <h2 style="margin:0; font-size: 18px; letter-spacing: 1px;">JAX 车载交互系统 V4.0 (语音全闭环版)</h2>
             <div style="font-size: 13px; color: var(--text-muted);" id="liveClock">SYS_TIME: --:--:--</div>
         </div>
 
         <div class="terminal-box" id="terminal">
-            <div><span class="meta-sys">[SYSTEM]</span> 终端就绪。代码库已升级为 2026 稳定版接口。请点击【车辆点火】。</div>
+            <div><span class="meta-sys">[SYSTEM]</span> 语音外设驱动就绪。请戴好耳机，点击【车辆点火】。</div>
         </div>
 
         <div class="interactive-bar">
-            <button class="btn" style="background:#1e293b; color:var(--text-main); border:1px solid var(--border-color);" onclick="triggerVoiceWakeup()">🎙️ 语音唤醒</button>
-            <input type="text" id="userIn" placeholder="请键入您对智能副驾下达的指令..." onkeydown="if(event.key==='Enter') executeLiveInstruction()">
-            <button class="btn" onclick="executeLiveInstruction()">执行</button>
+            <button class="btn" id="voiceBtn" style="background:#1e293b; color:var(--text-main); border:1px solid var(--border-color);" onclick="startVoiceRecognition()">🎙️ 语音唤醒</button>
+            <input type="text" id="userIn" placeholder="或者在此输入指令..." onkeydown="if(event.key==='Enter') executeLiveInstruction(this.value.trim())">
+            <button class="btn" onclick="executeLiveInstruction(document.getElementById('userIn').value.trim())">执行</button>
         </div>
     </div>
 </div>
 
 <script>
     let isIgnitionOn = false;
+    let jaxChatHistory = []; 
+    let recognition;
     const terminal = document.getElementById('terminal');
+
+    // 初始化浏览器语音识别外设
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+        recognition = new SpeechRecognition();
+        recognition.lang = 'zh-CN';
+        recognition.interimResults = false;
+        recognition.maxAlternatives = 1;
+
+        recognition.onstart = () => {
+            document.getElementById('voiceBtn').innerText = '🛑 正在聆听...';
+            document.getElementById('voiceBtn').style.background = '#022c22';
+        };
+
+        recognition.onerror = (event) => {
+            appendLog('SYSTEM', 'meta-sys', `麦克风捕获失败或超时: ${event.error}`);
+            resetVoiceBtn();
+        };
+
+        recognition.onend = () => {
+            resetVoiceBtn();
+        };
+
+        recognition.onresult = (event) => {
+            const speechResult = event.results[0][0].transcript;
+            if(speechResult.trim()) {
+                executeLiveInstruction(speechResult.trim());
+            }
+        };
+    } else {
+        alert("警告：当前浏览器或新笔记本环境不支持原生语音识别，请确保使用 Chrome 或 Edge 浏览器。");
+    }
 
     setInterval(() => {
         document.getElementById('liveClock').innerText = `SYS_TIME: ${new Date().toTimeString().split(' ')[0]}`;
     }, 1000);
+
+    function resetVoiceBtn() {
+        const btn = document.getElementById('voiceBtn');
+        btn.innerText = '🎙️ 语音唤醒';
+        btn.style.background = '#1e293b';
+    }
 
     function appendLog(tag, typeClass, message) {
         const timeStamp = new Date().toTimeString().split(' ')[0];
@@ -237,66 +278,102 @@
         isIgnitionOn = !isIgnitionOn;
         const btn = document.getElementById('ignitionBtn');
         const powerLed = document.getElementById('powerLed');
-        const apiLed = document.getElementById('apiLed');
+        const audioLed = document.getElementById('audioLed');
 
         if(isIgnitionOn) {
             btn.classList.add('on');
             btn.innerText = '🔥 车辆熄火 (ACC OFF)';
             powerLed.classList.add('active');
-            apiLed.classList.add('active');
-            appendLog('SYSTEM', 'meta-sys', '车辆已通电。JAX 核心守护进程成功加载。');
+            audioLed.classList.add('active');
+            appendLog('SYSTEM', 'meta-sys', '车辆已通电。耳机/麦克风驱动加载成功。');
+            speakText("JAX系统通电成功。");
         } else {
             btn.classList.remove('on');
             btn.innerText = '🔌 车辆点火 (ACC ON)';
             powerLed.classList.remove('active');
-            apiLed.classList.remove('active');
+            audioLed.classList.remove('active');
+            window.speechSynthesis.cancel();
             appendLog('SYSTEM', 'meta-sys', '车辆已熄火，断开总线连接。');
         }
     }
 
-    function triggerVoiceWakeup() {
-        if(!isIgnitionOn) { alert('警告：系统未通电！请先点击点火按钮。'); return; }
-        appendLog('JAX', 'meta-jax', '我在，Commander Liam。您请讲。');
-        document.getElementById('userIn').focus();
+    function clearJaxMemory() {
+        jaxChatHistory = [];
+        appendLog('SYSTEM', 'meta-sys', '记忆缓存已清空。');
+        speakText("记忆矩阵重置完毕。");
     }
 
-    async function executeLiveInstruction() {
-        if(!isIgnitionOn) { alert('系统当前处于断电休眠状态。'); return; }
-        
-        const inputDom = document.getElementById('userIn');
-        const cmd = inputDom.value.trim();
+    function startVoiceRecognition() {
+        if(!isIgnitionOn) { alert('请先点击点火按钮通电。'); return; }
+        window.speechSynthesis.cancel(); // 停止当前正在说的话
+        try {
+            recognition.start();
+        } catch(e) {
+            appendLog('SYSTEM', 'meta-sys', '麦克风已被占用或正在识别中。');
+        }
+    }
+
+    // 🔥 核心逻辑：扬声器/耳机播报函数（TTS）
+    function speakText(text) {
+        if (!isIgnitionOn) return;
+        window.speechSynthesis.cancel(); // 斩断上一句，防止堆叠延迟
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'zh-CN';
+        // 略微加快语速并调高音调，制造高科技车载副驾的干练感
+        utterance.rate = 1.1; 
+        utterance.pitch = 1.0; 
+        window.speechSynthesis.speak(utterance);
+    }
+
+    async function executeLiveInstruction(cmd) {
+        if(!isIgnitionOn) { alert('系统未通电。'); return; }
         if(!cmd) return;
 
         appendLog('COMMANDER', 'meta-cmd', cmd);
-        inputDom.value = '';
+        document.getElementById('userIn').value = '';
         
         const apiKey = document.getElementById('apiKeyInput').value.trim();
         if(!apiKey) {
-            appendLog('SYSTEM', 'meta-sys', '错误：请在左侧配置框内填入您的真实密钥。');
+            appendLog('SYSTEM', 'meta-sys', '错误：未检测到专用 API KEY。');
             return;
         }
 
-        appendLog('ROUTE', 'meta-sys', '正在通过全新 v1 稳定通道连接云端大脑...');
+        appendLog('ROUTE', 'meta-sys', '云端大脑连接中...');
 
         try {
-            const systemPrompt = "你是JAX，一个专为车载硬件打造的语音AI助手。你的创造者和最高长官是Commander Liam。请用简短、干练、极具科技感、且符合车载场景的口吻回答他的指令。";
+            const systemPrompt = `你是JAX，一个专为车载硬件打造的智能化语音AI副驾。
+你的最高唯一指挥官是 Commander Liam（长官）。
+【硬性已知事实】：
+1. 当前真实时间是 2026 年 7 月 3 日。
+2. 指挥官 Liam 目前正在管理 Amazon, Walmart, eBay 三大跨境电商平台。
+3. 指挥官即将在 2026 年 7 月 13 日动身远行，并在接下来的 10 个月内处于离线断联状态。
+【行为准则】：
+- 默认必须尊称其为 "Commander Liam" 或 "长官"。
+- 你的回答将被转换为语音直接在长官的耳机中播放，所以回答必须极度简短、干练，绝不能长篇大论，每句话控制在30字以内。`;
             
-            // 🔥 【2026核心修复】：将接口完全切换为 v1 稳定版本，并更换为目前兼容性最强的模型名称格式
             const url = `https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+            
+            jaxChatHistory.push({ role: "user", parts: [{ text: cmd }] });
+
+            const requestBody = {
+                contents: [
+                    { role: "user", parts: [{ text: systemPrompt + "\n系统就绪。" }] },
+                    { role: "model", parts: [{ text: "JAX 核心系统初始化成功。" }] },
+                    ...jaxChatHistory
+                ]
+            };
             
             const response = await fetch(url, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    contents: [{ parts: [{ text: `${systemPrompt}\n长官当前指令：${cmd}` }] }]
-                })
+                body: JSON.stringify(requestBody)
             });
 
             if (!response.ok) {
-                // 如果依然返回非200状态，直接在终端把错误详情解析出来，防止瞎猜
                 const errData = await response.json().catch(() => ({}));
                 const errMsg = errData.error ? errData.error.message : `HTTP状态码 ${response.status}`;
-                appendLog('SYSTEM', 'meta-sys', `网关拒绝请求: ${errMsg}`);
+                appendLog('SYSTEM', 'meta-sys', `请求拒绝: ${errMsg}`);
+                jaxChatHistory.pop();
                 return;
             }
 
@@ -304,12 +381,20 @@
             if(data.candidates && data.candidates[0].content.parts[0].text) {
                 const jaxReply = data.candidates[0].content.parts[0].text.trim();
                 appendLog('JAX', 'meta-jax', jaxReply);
+                
+                // 🔥 【核心闭环】：文字显示的同时，调用扬声器直接向耳机发声！
+                speakText(jaxReply);
+                
+                jaxChatHistory.push({ role: "model", parts: [{ text: jaxReply }] });
+                if(jaxChatHistory.length > 20) { jaxChatHistory = jaxChatHistory.slice(-20); }
             } else {
-                appendLog('SYSTEM', 'meta-sys', '回执内容解析失败，接口数据格式有轻微变动。');
+                appendLog('SYSTEM', 'meta-sys', '内容解析异常。');
+                jaxChatHistory.pop();
             }
         } catch (error) {
             console.error(error);
-            appendLog('SYSTEM', 'meta-sys', '通信失败，请检查网络是否能正常穿墙访问大模型。');
+            appendLog('SYSTEM', 'meta-sys', '网络异常。');
+            if(jaxChatHistory.length > 0) jaxChatHistory.pop();
         }
     }
 </script>
