@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JAX 车载智能副驾 - 核心联调控制台</title> 
+    <title>JAX 车载智能副驾 - 2026全网联调版</title>
     <style>
         :root {
             --bg-dark: #0b0e14;
@@ -175,10 +175,10 @@
 <div class="workspace">
     <div class="sidebar">
         <div>
-            <h3 class="panel-title">JAX 真实内核配置</h3>
+            <h3 class="panel-title">JAX 内核校准面板</h3>
             <div class="config-group" style="margin-top: 12px;">
                 <label>长官的专用 API KEY</label>
-                <input type="password" id="apiKeyInput" value="AIzaSyA_YOUR_API_KEY_STREAM_HERE" placeholder="输入真实 API Key 以连接云端大脑...">
+                <input type="password" id="apiKeyInput" value="" placeholder="直接在此输入以 AQ 开头的密钥...">
             </div>
         </div>
 
@@ -200,12 +200,12 @@
 
     <div class="main-display">
         <div class="screen-header">
-            <h2 style="margin:0; font-size: 18px; letter-spacing: 1px;">JAX 车载交互系统 V1.2.0 (实时大模型版)</h2>
+            <h2 style="margin:0; font-size: 18px; letter-spacing: 1px;">JAX 车载交互系统 V2.0 (网络优化版)</h2>
             <div style="font-size: 13px; color: var(--text-muted);" id="liveClock">SYS_TIME: --:--:--</div>
         </div>
 
         <div class="terminal-box" id="terminal">
-            <div><span class="meta-sys">[SYSTEM]</span> 笔记本终端就绪。请拉起左侧【车辆点火】开关通电触发。</div>
+            <div><span class="meta-sys">[SYSTEM]</span> 终端就绪。代码库已升级为 2026 稳定版接口。请点击【车辆点火】。</div>
         </div>
 
         <div class="interactive-bar">
@@ -244,16 +244,13 @@
             btn.innerText = '🔥 车辆熄火 (ACC OFF)';
             powerLed.classList.add('active');
             apiLed.classList.add('active');
-            appendLog('SYSTEM', 'meta-sys', '车辆已通电。JAX 核心守护进程启动，成功加载长官的长期记忆矩阵。');
-            setTimeout(() => {
-                appendLog('JAX', 'meta-jax', '长官，JAX 智能副驾已嵌入全功能 API 大脑，实时听候您的指令！');
-            }, 600);
+            appendLog('SYSTEM', 'meta-sys', '车辆已通电。JAX 核心守护进程成功加载。');
         } else {
             btn.classList.remove('on');
             btn.innerText = '🔌 车辆点火 (ACC ON)';
             powerLed.classList.remove('active');
             apiLed.classList.remove('active');
-            appendLog('SYSTEM', 'meta-sys', '车辆已熄火，断开总线连接。保存最新交互日志至 GitHub。');
+            appendLog('SYSTEM', 'meta-sys', '车辆已熄火，断开总线连接。');
         }
     }
 
@@ -263,7 +260,6 @@
         document.getElementById('userIn').focus();
     }
 
-    // 核心流：通过您的真实 API KEY 异步向云端大脑拿结果
     async function executeLiveInstruction() {
         if(!isIgnitionOn) { alert('系统当前处于断电休眠状态。'); return; }
         
@@ -275,18 +271,20 @@
         inputDom.value = '';
         
         const apiKey = document.getElementById('apiKeyInput').value.trim();
-        if(!apiKey || apiKey.includes('YOUR_API_KEY')) {
-            appendLog('SYSTEM', 'meta-sys', '错误：未检测到有效的授权密钥 (API KEY)，请在左侧配置框内填入您的真实密钥。');
+        if(!apiKey) {
+            appendLog('SYSTEM', 'meta-sys', '错误：请在左侧配置框内填入您的真实密钥。');
             return;
         }
 
-        appendLog('ROUTE', 'meta-sys', '正在将语音指令打包并安全传输至大模型神经元网关...');
+        appendLog('ROUTE', 'meta-sys', '正在通过全新 v1 稳定通道连接云端大脑...');
 
         try {
-            // 构建车载特定提示词，让返回的内容完全符合JAX的车载副驾身份
             const systemPrompt = "你是JAX，一个专为车载硬件打造的语音AI助手。你的创造者和最高长官是Commander Liam。请用简短、干练、极具科技感、且符合车载场景的口吻回答他的指令。";
             
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`, {
+            // 🔥 【2026核心修复】：将接口完全切换为 v1 稳定版本，并更换为目前兼容性最强的模型名称格式
+            const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+            
+            const response = await fetch(url, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -294,16 +292,24 @@
                 })
             });
 
+            if (!response.ok) {
+                // 如果依然返回非200状态，直接在终端把错误详情解析出来，防止瞎猜
+                const errData = await response.json().catch(() => ({}));
+                const errMsg = errData.error ? errData.error.message : `HTTP状态码 ${response.status}`;
+                appendLog('SYSTEM', 'meta-sys', `网关拒绝请求: ${errMsg}`);
+                return;
+            }
+
             const data = await response.json();
             if(data.candidates && data.candidates[0].content.parts[0].text) {
                 const jaxReply = data.candidates[0].content.parts[0].text.trim();
                 appendLog('JAX', 'meta-jax', jaxReply);
             } else {
-                appendLog('SYSTEM', 'meta-sys', '网关回执异常：解析内容失败，请检查账户额度或网络状态。');
+                appendLog('SYSTEM', 'meta-sys', '回执内容解析失败，接口数据格式有轻微变动。');
             }
         } catch (error) {
             console.error(error);
-            appendLog('SYSTEM', 'meta-sys', '通信总线熔断：网络请求失败，请确保新笔记本能够正常访问大模型服务。');
+            appendLog('SYSTEM', 'meta-sys', '通信失败，请检查网络是否能正常穿墙访问大模型。');
         }
     }
 </script>
