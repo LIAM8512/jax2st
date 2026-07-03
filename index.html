@@ -282,7 +282,7 @@
             const systemPrompt = "你是JAX，一个专为车载硬件打造的语音AI助手。你的创造者和最高长官是Commander Liam。请用简短、干练、极具科技感、且符合车载场景的口吻回答他的指令。";
             
             // 🔥 【2026核心修复】：将接口完全切换为 v1 稳定版本，并更换为目前兼容性最强的模型名称格式
-            const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+            const url = `https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
             
             const response = await fetch(url, {
                 method: "POST",
