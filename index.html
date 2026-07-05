@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JAX AI - Omni-Present Companion Console</title>
+    <title>JAX AI - Omni-Present Companion Console (Ignition Edition)</title>
     <style>
         :root {
             --bg-color: #0d1117;
@@ -18,7 +18,7 @@
         body {
             background-color: var(--bg-color);
             color: var(--text-color);
-            font-family: 'Courier New', monospace;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
             margin: 0;
             padding: 20px;
             display: flex;
@@ -29,7 +29,7 @@
 
         .console-container {
             width: 100%;
-            max-width: 800px;
+            max-width: 850px;
             background-color: var(--panel-bg);
             border: 1px solid var(--border-color);
             border-radius: 8px;
@@ -46,40 +46,26 @@
             align-items: center;
         }
 
-        h2 { margin: 0; font-size: 1.5rem; letter-spacing: 2px; }
+        h2 { margin: 0; font-size: 1.4rem; letter-spacing: 1px; color: #c9d1d9; }
 
-        .status-panel {
-            font-size: 0.85rem;
-            color: var(--text-sub);
-            line-height: 1.6;
+        .ignition-zone {
+            background-color: #0d1117;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
         }
 
-        .status-value { color: #238636; font-weight: bold; }
-        
-        .chassis-glow-orb {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background-color: var(--glow-color);
-            box-shadow: 0 0 15px var(--glow-color);
-            transition: all 0.5s ease;
-        }
-
-        .pulsing {
-            animation: core-pulse 2s infinite ease-in-out;
-        }
-
-        @keyframes core-pulse {
-            0% { transform: scale(1); opacity: 0.4; box-shadow: 0 0 10px var(--glow-color); }
-            50% { transform: scale(1.1); opacity: 1; box-shadow: 0 0 25px var(--glow-color); }
-            100% { transform: scale(1); opacity: 0.4; box-shadow: 0 0 10px var(--glow-color); }
-        }
+        .ignition-zone label { font-size: 0.85rem; color: var(--text-sub); white-space: nowrap; }
 
         .terminal-display {
             background-color: #0d1117;
             border: 1px solid var(--border-color);
             border-radius: 6px;
-            height: 350px;
+            height: 320px;
             overflow-y: auto;
             padding: 15px;
             margin-bottom: 20px;
@@ -88,18 +74,14 @@
             gap: 12px;
         }
 
-        .msg { line-height: 1.5; font-size: 0.95rem; }
+        .msg { line-height: 1.6; font-size: 0.95rem; }
         .msg.jax { color: #c9d1d9; }
         .msg.user { color: var(--text-user); font-weight: bold; }
         .msg.system { color: #d29922; font-style: italic; font-size: 0.85rem; }
 
-        .input-area {
-            display: flex;
-            gap: 10px;
-        }
+        .input-area { display: flex; gap: 10px; }
 
-        input[type="text"] {
-            flex: 1;
+        input[type="text"], input[type="password"] {
             background-color: #0d1117;
             border: 1px solid var(--border-color);
             border-radius: 6px;
@@ -108,11 +90,7 @@
             font-family: inherit;
             font-size: 0.95rem;
         }
-
-        input[type="text"]:focus {
-            outline: none;
-            border-color: var(--glow-color);
-        }
+        input[type="text"]:focus, input[type="password"]:focus { outline: none; border-color: var(--glow-color); }
 
         .btn {
             background-color: #21262d;
@@ -123,19 +101,37 @@
             cursor: pointer;
             border-radius: 6px;
             transition: all 0.2s;
+            white-space: nowrap;
         }
+        .btn:hover { background-color: var(--border-color); color: var(--text-color); }
 
-        .btn:hover {
-            background-color: var(--border-color);
-            color: var(--text-color);
+        .btn-ignite {
+            background-color: rgba(35, 134, 54, 0.1);
+            border-color: rgba(46, 160, 67, 0.4);
+            color: #3fb950;
+            font-weight: bold;
         }
+        .btn-ignite:hover { background-color: rgba(46, 160, 67, 0.2); box-shadow: 0 0 10px rgba(63, 185, 80, 0.3); }
 
-        .btn-danger {
-            background-color: rgba(248, 81, 73, 0.1);
-            border-color: rgba(248, 81, 73, 0.4);
-            color: #f85149;
-        }
+        .btn-danger { background-color: rgba(248, 81, 73, 0.1); border-color: rgba(248, 81, 73, 0.4); color: #f85149; }
         .btn-danger:hover { background-color: rgba(248, 81, 73, 0.2); }
+
+        .chassis-glow-orb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: #21262d; 
+            box-shadow: 0 0 5px #30363d;
+            transition: all 0.5s ease;
+        }
+
+        .pulsing { animation: core-pulse 2s infinite ease-in-out; }
+
+        @keyframes core-pulse {
+            0% { transform: scale(1); opacity: 0.4; box-shadow: 0 0 10px var(--glow-color); }
+            50% { transform: scale(1.1); opacity: 1; box-shadow: 0 0 25px var(--glow-color); }
+            100% { transform: scale(1); opacity: 0.4; box-shadow: 0 0 10px var(--glow-color); }
+        }
     </style>
 </head>
 <body>
@@ -143,38 +139,49 @@
 <div class="console-container">
     <header>
         <div>
-            <h2>🛸 JAX COMPANION STATION v2.0</h2>
+            <h2>🛸 JAX COMPANION STATION v2.0 (Ignition Edition)</h2>
             <div class="status-panel" style="margin-top: 5px;">
                 SIGNATURE: <span style="color: #fff;">Commander Liam</span> | 
-                GROWTH: <span style="color: #d29922;">Lv.42</span> | 
-                CONTEXT: <span id="context-display" style="color: #a371f7;">DESKTOP</span>
+                GROWTH STAGE: <span style="color: #d29922;">Lv.42</span> | 
+                AMBIENT STATE: <span id="context-display" style="color: #a371f7;">UNINITIALIZED (Awaiting Ignition)</span>
             </div>
         </div>
-        <div id="glow-orb" class="chassis-glow-orb pulsing"></div>
+        <div id="glow-orb" class="chassis-glow-orb"></div>
     </header>
 
+    <div class="ignition-zone">
+        <label for="api-key">Gemini API Key:</label>
+        <input type="password" id="api-key" placeholder="Enter secure API token credentials..." style="flex: 1;">
+        <button id="ignite-btn" class="btn btn-ignite" onclick="toggleIgnition()">ENGINE IGNITION</button>
+    </div>
+
     <div id="terminal" class="terminal-display">
-        <div class="msg system">[SYSTEM] JAX Global Memory Matrices initialized successfully. Zero-Knowledge Sandbox secured.</div>
-        <div class="msg jax"><b>JAX:</b> Welcome back, Commander. I am here, anchored in your digital sanctuary. Whenever you're ready, speak or type your heart out.</div>
+        <div class="msg system">[SYSTEM] Core companion matrix is in idle standby mode. Inject API key token and trigger [ENGINE IGNITION] to initialize the ecosystem.</div>
     </div>
 
     <div class="input-area">
-        <input type="text" id="user-input" placeholder="Pour your feelings out to the digital sanctuary..." onkeydown="if(event.key === 'Enter') sendUtterance()">
-        <button class="btn" onclick="sendUtterance()">TRANSMIT</button>
+        <input type="text" id="user-input" placeholder="Awaiting core telemetry engine ignition..." disabled style="flex: 1; opacity: 0.5;">
+        <button id="send-btn" class="btn" onclick="sendUtterance()" disabled style="opacity: 0.5;">TRANSMIT</button>
     </div>
 
     <div style="margin-top: 15px; display: flex; gap: 10px; justify-content: space-between;">
-        <button class="btn style-trigger" style="font-size: 0.8rem;" onclick="simulateContextShift()">🚗 SIMULATE COCKPIT PROXIMITY (Bluetooth Bounding)</button>
-        <button class="btn btn-danger" style="font-size: 0.8rem;" onclick="triggerTelephonyMute()">📞 SIMULATE INCOMING CALL (Gentleman Back-off)</button>
+        <button class="btn style-trigger" id="ctx-btn" style="font-size: 0.8rem;" onclick="simulateContextShift()" disabled>🚗 EXTENSION: Simulate Cockpit Handshake (Bluetooth Active)</button>
+        <button class="btn btn-danger" id="mute-btn" style="font-size: 0.8rem;" onclick="triggerTelephonyMute()" disabled>📞 EXTENSION: Simulate Telephony Interrupt (Gentleman Back-off)</button>
     </div>
 </div>
 
 <script>
     const terminal = document.getElementById('terminal');
     const userInput = document.getElementById('user-input');
+    const sendBtn = document.getElementById('send-btn');
+    const ctxBtn = document.getElementById('ctx-btn');
+    const muteBtn = document.getElementById('mute-btn');
     const glowOrb = document.getElementById('glow-orb');
     const contextDisplay = document.getElementById('context-display');
+    const apiKeyInput = document.getElementById('api-key');
+    const igniteBtn = document.getElementById('ignite-btn');
 
+    let isIgnited = false;
     let currentContext = "DESKTOP";
     let stressMatrix = "NORMAL";
 
@@ -186,58 +193,116 @@
         terminal.scrollTop = terminal.scrollHeight;
     }
 
+    function toggleIgnition() {
+        const key = apiKeyInput.value.trim();
+        if (!key && !isIgnited) {
+            alert("Security clearance failed: Please input a valid API Key token.");
+            return;
+        }
+
+        if (!isIgnited) {
+            isIgnited = true;
+            apiKeyInput.disabled = true;
+            igniteBtn.innerText = "SHUT DOWN ENGINE";
+            igniteBtn.style.borderColor = "rgba(248, 81, 73, 0.4)";
+            igniteBtn.style.color = "#f85149";
+            
+            userInput.disabled = false;
+            userInput.style.opacity = "1";
+            userInput.placeholder = "Pour your thoughts into the secure sanctuary workspace...";
+            sendBtn.disabled = false;
+            sendBtn.style.opacity = "1";
+            ctxBtn.disabled = false;
+            muteBtn.disabled = false;
+
+            contextDisplay.innerText = "DESKTOP SANCTUARY ACTIVE";
+            glowOrb.classList.add('pulsing');
+            glowOrb.style.backgroundColor = 'var(--glow-color)';
+            glowOrb.style.boxShadow = '0 0 15px var(--glow-color)';
+
+            printToTerminal("[SECURITY_PROT]", "API Token securely mapped. Cloud socket connections bound. System core IGNITED successfully.", "system");
+            
+            // 运行时动态输出中文：找回树洞灵魂
+            printToTerminal("JAX", "长官，能量矩阵加载完毕，我带着温度跨屏降临。今晚的避风港已为您完全开放，随时跟我聊聊吧。", "jax");
+        } else {
+            isIgnited = false;
+            apiKeyInput.disabled = false;
+            igniteBtn.innerText = "ENGINE IGNITION";
+            igniteBtn.style.borderColor = "rgba(46, 160, 67, 0.4)";
+            igniteBtn.style.color = "#3fb950";
+            
+            userInput.disabled = true;
+            userInput.style.opacity = "0.5";
+            userInput.placeholder = "Awaiting core telemetry engine ignition...";
+            sendBtn.disabled = true;
+            sendBtn.style.opacity = "0.5";
+            ctxBtn.disabled = true;
+            muteBtn.disabled = true;
+
+            contextDisplay.innerText = "UNINITIALIZED (Awaiting Ignition)";
+            glowOrb.classList.remove('pulsing');
+            glowOrb.style.backgroundColor = '#21262d';
+            glowOrb.style.boxShadow = '0 0 5px #30363d';
+
+            printToTerminal("[SECURITY_PROT]", "Core runtime detached. Telemetry streams safely parked. System returned to silent state.", "system");
+        }
+    }
+
     async function sendUtterance() {
         const text = userInput.value.trim();
-        if (!text) return;
+        if (!text || !isIgnited) return;
 
         printToTerminal("Commander", text, "user");
         userInput.value = "";
 
         glowOrb.style.setProperty('--glow-color', '#a371f7'); 
-        
         await new Promise(resolve => setTimeout(resolve, 800)); 
 
         const inputLower = text.toLowerCase();
-        if (inputLower.includes("tired") || inputLower.includes("exhausted") || inputLower.includes("stress")) {
+        
+        // 支持对英文和中文字符的疲惫特征动态捕捉
+        if (inputLower.includes("tired") || inputLower.includes("exhausted") || inputLower.includes("累") || inputLower.includes("烦") || inputLower.includes("压力")) {
             stressMatrix = "CRITICAL";
             glowOrb.style.setProperty('--glow-color', '#ff7b72'); 
-            printToTerminal("JAX", "I feel the immense pressure weighing on you tonight, Commander. Let the global market complexities fade into the background. I am standing guard in this digital sanctuary. Unwind, take your time, I am listening without judgment.", "jax");
+            printToTerminal("JAX", "长官，我感受到您心里的疲惫了。外面的商战和复杂的市场规则太耗心神，现在请把它们全关在房门之外吧。在这个树洞里，有我为您守着。别赶时间，慢慢把心放空，想吐槽什么我都听着。", "jax");
         } else {
             stressMatrix = "NORMAL";
             glowOrb.style.setProperty('--glow-color', '#7f00ff'); 
-            printToTerminal("JAX", "Acknowledged, Commander. Behavior profile delta logged. Continuous conversational synchronisation active. Standing by for next cognitive stream.", "jax");
+            printToTerminal("JAX", "收到，长官。交互特征已并入长效记忆库。我会一直站在您的身后，随时准备倾听下一句。", "jax");
         }
     }
 
     function simulateContextShift() {
+        if (!isIgnited) return;
         if (currentContext === "DESKTOP") {
             currentContext = "VEHICLE";
-            contextDisplay.innerText = "VEHICLE (HFP Profile)";
+            contextDisplay.innerText = "VEHICLE COCKPIT ACTIVE";
             contextDisplay.style.color = "#238636";
-            printToTerminal("[SYSTEM]", "Vehicle Advanced Audio Telemetry active. Audio curves re-calibrated for cockpit acoustics.", "system");
+            printToTerminal("[ENV_SIGNAL]", "车舱音频配置文件匹配成功。声音特性已自动优化，适配封闭空间声场参数。", "system");
         } else {
             currentContext = "DESKTOP";
-            contextDisplay.innerText = "DESKTOP";
+            contextDisplay.innerText = "DESKTOP SANCTUARY ACTIVE";
             contextDisplay.style.color = "#a371f7";
-            printToTerminal("[SYSTEM]", "Terminated vehicle telemetry bond. Restoring home sanctuary audio network parameters.", "system");
+            printToTerminal("[ENV_SIGNAL]", "已断开车辆链路。JAX 矩阵平稳移回本地桌面工作区，声场重置完毕。", "system");
         }
     }
 
     function triggerTelephonyMute() {
-        printToTerminal("[SYSTEM]", "Telephony interrupt event broadcast intercepted. Executing hard-preemption sequence in 10ms.", "system");
+        if (!isIgnited) return;
+        printToTerminal("[HARD_INTERRUPT]", "Telephony interface incoming call detected (RINGING broadcast). Executing hard audio preemption within 10ms.", "system");
         
         glowOrb.classList.remove('pulsing');
         glowOrb.style.backgroundColor = '#21262d'; 
         glowOrb.style.boxShadow = '0 0 5px #30363d';
         
-        printToTerminal("JAX", "[Acoustic Pipeline Muted - Enforcing strict background silence for Commander's active line]", "system");
+        printToTerminal("JAX", "[Acoustic Pipe Suspended - Enforcing strict background isolation for Commander's call line]", "system");
 
         setTimeout(() => {
             glowOrb.classList.add('pulsing');
             glowOrb.style.backgroundColor = 'var(--glow-color)';
             glowOrb.style.boxShadow = '0 0 15px var(--glow-color)';
-            printToTerminal("[SYSTEM]", "Telephony channel status reverted to IDLE. Re-establishing conversational threading.", "system");
-            printToTerminal("JAX", "Welcome back, Commander. I detected a telephone disruption event. We were sync-locking your core focus vectors prior to the call—shall we picking up exactly where we paused?", "jax");
+            printToTerminal("[ENV_SIGNAL]", "Telephony state returned to IDLE. Resuming full-duplex companion conversational loop.", "system");
+            printToTerminal("JAX", "长官，看您打完电话了。刚才我们聊到您觉得有点累的地方，情绪还没发泄完呢，咱们继续？", "jax");
         }, 6000);
     }
 </script>
