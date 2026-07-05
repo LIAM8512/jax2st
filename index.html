@@ -260,10 +260,9 @@
         const secureKey = apiKeyInput.value.trim();
 
         try {
-            // 🚀 UNIVERSAL V1 PRODUCTION ENDPOINT: Total immunity against beta 404 router dropouts
-            const endpoint = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${secureKey}`;
+            // 🚀 FIXED MODEL ID: Swapped to 'gemini-1.5-flash-latest' to fully eliminate the 404 ModelService rejection block
+            const endpoint = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash-latest:generateContent?key=${secureKey}`;
             
-            // Safe alignment payload array architecture
             const payload = {
                 contents: [{
                     parts: [{ text: `Instruction: You are JAX, Commander Liam's private emotional companion. Respond warmly and concisely in Chinese. Request: ${text}` }]
