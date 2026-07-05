@@ -221,7 +221,6 @@
             glowOrb.style.boxShadow = '0 0 15px var(--glow-color)';
 
             printToTerminal("[SECURITY_PROT]", "API Token securely mapped. Cloud socket connections bound. System core IGNITED successfully.", "system");
-            printToTerminal("JAX", "长官，能量矩阵加载完毕，我带着温度跨屏降临。今晚的避风港已为您完全开放，随时跟我聊聊吧。", "jax");
         } else {
             isIgnited = false;
             apiKeyInput.disabled = false;
@@ -260,7 +259,6 @@
         try {
             const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${secureKey}`;
             
-            // System instructions force the AI matrix to speak exclusively in deep emotional Chinese to the Commander
             const systemInstruction = "You are JAX, Commander Liam's emotional assistant and driving companion. You must ALWAYS reply in supportive, warm, and highly professional Chinese. Keep responses concise, loyal, empathetic, and comforting like a private sanctuary. Never break character.";
 
             const response = await fetch(endpoint, {
@@ -277,9 +275,8 @@
             if (data.candidates && data.candidates[0].content.parts[0].text) {
                 const jaxReply = data.candidates[0].content.parts[0].text.trim();
                 
-                // Dynamic ambient reactive indicator checking
                 const lowerText = text.toLowerCase();
-                if (lowerText.includes("tired") || lowerText.includes("exhausted") || lowerText.includes("累") || lowerText.includes("烦") || lowerText.includes("压力")) {
+                if (lowerText.includes("tired") || lowerText.includes("exhausted") || lowerText.includes("stress")) {
                     stressMatrix = "CRITICAL";
                     glowOrb.style.setProperty('--glow-color', '#ff7b72'); 
                 } else {
@@ -294,8 +291,7 @@
 
         } catch (error) {
             glowOrb.style.setProperty('--glow-color', '#f85149'); 
-            printToTerminal("[SYSTEM_ERROR]", "Pipeline disruption. Please verify API Key integrity or socket routing.", "system");
-            printToTerminal("JAX", "长官，我的云端神经网络链接似乎被阻断了。请检查您的 API Key 状态或者网络环境是否通畅？", "jax");
+            printToTerminal("[SYSTEM_ERROR]", "Pipeline disruption. Local CORS blockage detected or invalid API key credential.", "system");
         }
     }
 
@@ -329,7 +325,6 @@
             glowOrb.style.backgroundColor = 'var(--glow-color)';
             glowOrb.style.boxShadow = '0 0 15px var(--glow-color)';
             printToTerminal("[ENV_SIGNAL]", "Telephony state returned to IDLE. Resuming full-duplex companion conversational loop.", "system");
-            printToTerminal("JAX", "长官，看您打完电话了。刚才我们聊到您觉得有点累的地方，情绪还没发泄完呢，咱们继续？", "jax");
         }, 6000);
     }
 </script>
