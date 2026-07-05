@@ -249,7 +249,7 @@
         const text = userInput.value.trim();
         if (!text || !isIgnited) return;
 
-        // Interface lock to secure atomicity and block resource contention
+        // UI Mutex Lock to secure network pipeline atomicity
         userInput.disabled = true;
         sendBtn.disabled = true;
 
@@ -261,29 +261,37 @@
         const secureKey = apiKeyInput.value.trim();
 
         try {
+            // Standard compliant official route
             const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${secureKey}`;
             
-            // Core telemetry constraint to guarantee emotional Chinese telemetry reflections
-            const systemInstruction = "You are JAX, Commander Liam's emotional assistant and driving companion. You must ALWAYS reply in supportive, warm, and highly professional Chinese. Keep responses concise, loyal, empathetic, and comforting like a private sanctuary. Never break character.";
+            // Ultra-stable payload mapping matrix
+            const payload = {
+                contents: [{
+                    parts: [{ text: text }]
+                }],
+                systemInstruction: {
+                    parts: [{ text: "You are JAX, Commander Liam's elite emotional assistant and driving companion. You must ALWAYS reply in supportive, warm, and highly professional Chinese. Keep responses concise, loyal, empathetic, and comforting like a private sanctuary. Never break character." }]
+                }
+            };
 
             const response = await fetch(endpoint, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    contents: [{ role: "user", parts: [{ text: text }] }],
-                    systemInstruction: { parts: [{ text: systemInstruction }] }
-                })
+                body: JSON.stringify(payload)
             });
 
-            if (!response.ok) {
-                throw new Error(`HTTP network anomaly: ${response.status}`);
-            }
-
             const data = await response.json();
+
+            // Catch HTTP or server-side structural blocks explicitly
+            if (!response.ok) {
+                let serverErrorMessage = data.error ? data.error.message : "Unknown gateway rejection";
+                throw new Error(`HTTP ${response.status} - ${serverErrorMessage}`);
+            }
             
             if (data.candidates && data.candidates[0].content.parts[0].text) {
                 const jaxReply = data.candidates[0].content.parts[0].text.trim();
                 
+                // Adaptive ambient reactive rendering
                 const lowerText = text.toLowerCase();
                 if (lowerText.includes("tired") || lowerText.includes("exhausted") || lowerText.includes("累") || lowerText.includes("烦") || lowerText.includes("压力")) {
                     stressMatrix = "CRITICAL";
@@ -295,14 +303,15 @@
 
                 printToTerminal("JAX", jaxReply, "jax");
             } else {
-                throw new Error("Invalid payload return parameters.");
+                throw new Error("Empty payload structure returned from server matrix.");
             }
 
         } catch (error) {
             glowOrb.style.setProperty('--glow-color', '#f85149'); 
-            printToTerminal("[SYSTEM_ERROR]", `Pipeline disruption: ${error.message}. Verify local HTTP server execution or API matrix routing.`, "system");
+            // Diagnostic scanner outputs the EXACT server response directly into the terminal feed
+            printToTerminal("[TELEMETRY_CRASH]", `Error Log: ${error.message}`, "system");
         } finally {
-            // Unlocking interfaces safely post-stream termination
+            // Safe teardown and interface ignition release
             userInput.disabled = false;
             sendBtn.disabled = false;
             userInput.focus();
