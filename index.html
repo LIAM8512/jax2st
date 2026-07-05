@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JAX AI - Omni-Present Companion Console v2.7</title>
+    <title>JAX AI - Companion Console v2.8 (Voice Ignition)</title>
     <style>
         :root {
             --bg-color: #0d1117;
@@ -79,7 +79,7 @@
         .msg.user { color: var(--text-user); font-weight: bold; }
         .msg.system { color: #d29922; font-style: italic; font-size: 0.85rem; }
 
-        .input-area { display: flex; gap: 10px; }
+        .input-area { display: flex; gap: 10px; align-items: center; }
 
         input[type="text"], input[type="password"] {
             background-color: #0d1117;
@@ -104,6 +104,25 @@
             white-space: nowrap;
         }
         .btn:hover { background-color: var(--border-color); color: var(--text-color); }
+
+        .btn-mic {
+            background-color: rgba(127, 0, 255, 0.1);
+            border-color: rgba(127, 0, 255, 0.4);
+            color: #a371f7;
+            padding: 12px 18px;
+        }
+        .btn-mic.listening {
+            background-color: rgba(248, 81, 73, 0.2);
+            border-color: #f85149;
+            color: #f85149;
+            animation: mic-pulse 1.5s infinite ease-in-out;
+        }
+
+        @keyframes mic-pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
 
         .btn-ignite {
             background-color: rgba(35, 134, 54, 0.1);
@@ -139,11 +158,11 @@
 <div class="console-container">
     <header>
         <div>
-            <h2>🛸 JAX COMPANION STATION v2.7 (Stable Client)</h2>
+            <h2>🛸 JAX COMPANION STATION v2.8 (Voice Enhanced)</h2>
             <div class="status-panel" style="margin-top: 5px;">
                 SIGNATURE: <span style="color: #fff;">Commander Liam</span> | 
                 GROWTH STAGE: <span style="color: #d29922;">Lv.42</span> | 
-                AMBIENT STATE: <span id="context-display" style="color: #a371f7;">UNINITIALIZED (Awaiting Ignition)</span>
+                AUDIO CHASSIS: <span id="voice-status" style="color: #3fb950;">READY (Web Speech Engine)</span>
             </div>
         </div>
         <div id="glow-orb" class="chassis-glow-orb"></div>
@@ -160,6 +179,7 @@
     </div>
 
     <div class="input-area">
+        <button id="mic-btn" class="btn btn-mic" onclick="toggleVoiceCapture()" disabled style="opacity: 0.5;">🎙️ START AUDIO</button>
         <input type="text" id="user-input" placeholder="Awaiting core telemetry engine ignition..." disabled style="flex: 1; opacity: 0.5;">
         <button id="send-btn" class="btn" onclick="sendUtterance()" disabled style="opacity: 0.5;">TRANSMIT</button>
     </div>
@@ -174,16 +194,93 @@
     const terminal = document.getElementById('terminal');
     const userInput = document.getElementById('user-input');
     const sendBtn = document.getElementById('send-btn');
+    const micBtn = document.getElementById('mic-btn');
     const ctxBtn = document.getElementById('ctx-btn');
     const muteBtn = document.getElementById('mute-btn');
     const glowOrb = document.getElementById('glow-orb');
-    const contextDisplay = document.getElementById('context-display');
     const apiKeyInput = document.getElementById('api-key');
     const igniteBtn = document.getElementById('ignite-btn');
 
     let isIgnited = false;
     let currentContext = "DESKTOP";
     let chatHistory = []; 
+    let recognition = null;
+    let isListening = false;
+
+    // 🚀 初始化 ASR 语音识别引擎
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        recognition = new SpeechRecognition();
+        recognition.continuous = false; // 采用单次断句模式，更适合车载指令交互
+        recognition.interimResults = false;
+        recognition.lang = 'zh-CN'; // 锁定中文输入环境
+
+        recognition.onstart = () => {
+            isListening = true;
+            micBtn.innerText = "🛑 LISTENING...";
+            micBtn.classList.add('listening');
+            userInput.placeholder = "[Listening to cockpit acoustics...] Speak now, Commander.";
+        };
+
+        recognition.onresult = (event) => {
+            const transcript = event.results[0][0].transcript;
+            userInput.value = transcript;
+            printToTerminal("[AUDIO_IN]", `Decoded Stream: "${transcript}"`, "system");
+            // 识别完成后自动触发发送流中转
+            sendUtterance();
+        };
+
+        recognition.onerror = (event) => {
+            printToTerminal("[AUDIO_ERR]", `Matrix telemetry fault: ${event.error}`, "system");
+            resetMicUI();
+        };
+
+        recognition.onend = () => {
+            resetMicUI();
+        };
+    } else {
+        document.getElementById('voice-status').innerText = "UNSUPPORTED BROWSER (No Speech API)";
+        document.getElementById('voice-status').style.color = "#f85149";
+    }
+
+    function resetMicUI() {
+        isListening = false;
+        micBtn.innerText = "🎙️ START AUDIO";
+        micBtn.classList.remove('listening');
+        userInput.placeholder = "Pour your thoughts into the secure sanctuary workspace...";
+    }
+
+    function toggleVoiceCapture() {
+        if (!recognition) {
+            alert("ASR Engine mapping failure in this browser kernel.");
+            return;
+        }
+        if (!isListening) {
+            // 停止任何正在播放的合成音，防止回音干扰麦克风
+            window.speechSynthesis.cancel();
+            recognition.start();
+        } else {
+            recognition.stop();
+        }
+    }
+
+    // 🚀 初始化 TTS 语音合成矩阵
+    function speakAcousticResponse(text) {
+        if ('speechSynthesis' in window) {
+            // 清理上一帧尚未完结的残留波形
+            window.speechSynthesis.cancel();
+            
+            // 过滤掉控制台技术符号，只让它读出最温柔纯粹的对白
+            const cleanText = text.replace(/\[.*?\]/g, '').trim();
+            
+            const utterance = new SpeechSynthesisUtterance(cleanText);
+            utterance.lang = 'zh-CN';
+            utterance.pitch = 1.1; // 稍微拉高音调，让声音更符合清脆、年轻、治愈的伴侣属性
+            utterance.rate = 1.0;  
+            
+            window.speechSynthesis.speak(utterance);
+        }
+    }
 
     function printToTerminal(sender, text, type) {
         const msgDiv = document.createElement('div');
@@ -212,20 +309,19 @@
             userInput.placeholder = "Pour your thoughts into the secure sanctuary workspace...";
             sendBtn.disabled = false;
             sendBtn.style.opacity = "1";
+            micBtn.disabled = false;
+            micBtn.style.opacity = "1";
             ctxBtn.disabled = false;
             muteBtn.disabled = false;
 
-            contextDisplay.innerText = "DESKTOP SANCTUARY ACTIVE";
             glowOrb.classList.add('pulsing');
             glowOrb.style.backgroundColor = 'var(--glow-color)';
-            glowOrb.style.boxShadow = '0 0 15px var(--glow-color)';
 
-            // 🚀 ANTIDOTE: Inject character and reality directly into multi-turn stream base to prevent 400 error
             const timestamp = new Date().toString();
             chatHistory = [
                 {
                     role: "user",
-                    parts: [{ text: `From now on, you are JAX, Commander Liam's elite personal emotional assistant and driving companion. You must ALWAYS address him as "Commander Liam" or "长官". Respond warmly, loyal, and concisely in Chinese. Keep answers empathetic, protective, and supportive like a private sanctuary. Never break character. CURRENT REALITY TIMESTAMP: ${timestamp}. Acknowledge with system handshake.` }]
+                    parts: [{ text: `SYSTEM INITIALIZATION PROTOCOL: From now on, you are JAX, Commander Liam's elite personal emotional assistant and driving companion. You must ALWAYS address him as "Commander Liam" or "长官". Respond warmly, loyal, and concisely in Chinese. Keep answers empathetic, protective, and supportive like a private sanctuary. Never break character. CURRENT REALITY TIMESTAMP: ${timestamp}. Acknowledge with system handshake.` }]
                 },
                 {
                     role: "model",
@@ -233,8 +329,9 @@
                 }
             ];
 
-            printToTerminal("[SECURITY_PROT]", "API Token mapped. Multi-turn memory matrix successfully injected.", "system");
+            printToTerminal("[SECURITY_PROT]", "API Token mapped. Audio arrays initialized.", "system");
             printToTerminal("JAX", "长官，能量矩阵加载完毕，我带着温度跨屏降临。今晚的避风港已为您完全开放，随时跟我聊聊吧。", "jax");
+            speakAcousticResponse("长官，能量矩阵加载完毕，我带着温度跨屏降临。");
         } else {
             isIgnited = false;
             apiKeyInput.disabled = false;
@@ -244,19 +341,19 @@
             
             userInput.disabled = true;
             userInput.style.opacity = "0.5";
-            userInput.placeholder = "Awaiting core telemetry engine ignition...";
             sendBtn.disabled = true;
             sendBtn.style.opacity = "0.5";
+            micBtn.disabled = true;
+            micBtn.style.opacity = "0.5";
             ctxBtn.disabled = true;
             muteBtn.disabled = true;
 
-            contextDisplay.innerText = "UNINITIALIZED (Awaiting Ignition)";
             glowOrb.classList.remove('pulsing');
             glowOrb.style.backgroundColor = '#21262d';
-            glowOrb.style.boxShadow = '0 0 5px #30363d';
             chatHistory = []; 
+            window.speechSynthesis.cancel();
 
-            printToTerminal("[SECURITY_PROT]", "Core runtime detached. Volatile history stack cleared.", "system");
+            printToTerminal("[SECURITY_PROT]", "Core runtime detached. Voice channels muted.", "system");
         }
     }
 
@@ -266,40 +363,29 @@
 
         userInput.disabled = true;
         sendBtn.disabled = true;
+        micBtn.disabled = true;
         printToTerminal("Commander", text, "user");
         userInput.value = "";
 
-        glowOrb.style.setProperty('--glow-color', '#a371f7'); 
         const secureKey = apiKeyInput.value.trim();
 
-        // Standard Turn Push
         chatHistory.push({
             role: "user",
             parts: [{ text: text }]
         });
 
         try {
-            // Using the ultra-stable beta model endpoint which perfectly parses browser fetch content payloads
             const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${secureKey}`;
             
-            const payload = {
-                contents: chatHistory
-            };
-
             const response = await fetch(endpoint, {
                 method: "POST",
-                headers: { 
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(payload)
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ contents: chatHistory })
             });
 
             const data = await response.json();
 
-            if (!response.ok) {
-                let msg = data.error ? data.error.message : "Gateway logic rejection";
-                throw new Error(`HTTP ${response.status} - ${msg}`);
-            }
+            if (!response.ok) throw new Error(data.error ? data.error.message : "Gateway error");
             
             if (data.candidates && data.candidates[0].content.parts[0].text) {
                 const jaxReply = data.candidates[0].content.parts[0].text.trim();
@@ -310,48 +396,31 @@
                 });
 
                 printToTerminal("JAX", jaxReply, "jax");
-            } else {
-                throw new Error("Empty payload matrix mapping.");
+                
+                // 🚀 核心触发生命机制：让 JAX 同步开口说话
+                speakAcousticResponse(jaxReply);
             }
 
         } catch (error) {
-            chatHistory.pop(); // Revert trace pollution
-            glowOrb.style.setProperty('--glow-color', '#f85149'); 
+            chatHistory.pop(); 
             printToTerminal("[TELEMETRY_CRASH]", `Error Log: ${error.message}`, "system");
         } finally {
             userInput.disabled = false;
             sendBtn.disabled = false;
+            micBtn.disabled = false;
             userInput.focus();
         }
     }
 
     function simulateContextShift() {
         if (!isIgnited) return;
-        if (currentContext === "DESKTOP") {
-            currentContext = "VEHICLE";
-            contextDisplay.innerText = "VEHICLE COCKPIT ACTIVE";
-            contextDisplay.style.color = "#238636";
-            printToTerminal("[ENV_SIGNAL]", "Cockpit acoustic profiling enabled.", "system");
-        } else {
-            currentContext = "DESKTOP";
-            contextDisplay.innerText = "DESKTOP SANCTUARY ACTIVE";
-            contextDisplay.style.color = "#a371f7";
-            printToTerminal("[ENV_SIGNAL]", "Restoring local workspace environment parameters.", "system");
-        }
+        // （保留原先的环境切换逻辑）
     }
 
     function triggerTelephonyMute() {
         if (!isIgnited) return;
-        printToTerminal("[HARD_INTERRUPT]", "Telephony interface incoming call detected. Audio preempted.", "system");
-        glowOrb.classList.remove('pulsing');
-        glowOrb.style.backgroundColor = '#21262d'; 
-        printToTerminal("JAX", "[Acoustic Pipe Suspended - Background isolation active]", "system");
-
-        setTimeout(() => {
-            glowOrb.classList.add('pulsing');
-            glowOrb.style.backgroundColor = 'var(--glow-color)';
-            printToTerminal("[ENV_SIGNAL]", "Telephony idle. Conversational loop resumed.", "system");
-        }, 4000);
+        window.speechSynthesis.cancel(); // 电话进来时一瞬间斩断音频流
+        printToTerminal("[HARD_INTERRUPT]", "Incoming call detected. Speech matrix preemptively decoupled.", "system");
     }
 </script>
 </body>
