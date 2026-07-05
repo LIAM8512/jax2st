@@ -249,6 +249,10 @@
         const text = userInput.value.trim();
         if (!text || !isIgnited) return;
 
+        // Interface lock to secure atomicity and block resource contention
+        userInput.disabled = true;
+        sendBtn.disabled = true;
+
         printToTerminal("Commander", text, "user");
         userInput.value = "";
 
@@ -259,16 +263,21 @@
         try {
             const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${secureKey}`;
             
+            // Core telemetry constraint to guarantee emotional Chinese telemetry reflections
             const systemInstruction = "You are JAX, Commander Liam's emotional assistant and driving companion. You must ALWAYS reply in supportive, warm, and highly professional Chinese. Keep responses concise, loyal, empathetic, and comforting like a private sanctuary. Never break character.";
 
             const response = await fetch(endpoint, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    contents: [{ parts: [{ text: text }] }],
+                    contents: [{ role: "user", parts: [{ text: text }] }],
                     systemInstruction: { parts: [{ text: systemInstruction }] }
                 })
             });
+
+            if (!response.ok) {
+                throw new Error(`HTTP network anomaly: ${response.status}`);
+            }
 
             const data = await response.json();
             
@@ -276,7 +285,7 @@
                 const jaxReply = data.candidates[0].content.parts[0].text.trim();
                 
                 const lowerText = text.toLowerCase();
-                if (lowerText.includes("tired") || lowerText.includes("exhausted") || lowerText.includes("stress")) {
+                if (lowerText.includes("tired") || lowerText.includes("exhausted") || lowerText.includes("累") || lowerText.includes("烦") || lowerText.includes("压力")) {
                     stressMatrix = "CRITICAL";
                     glowOrb.style.setProperty('--glow-color', '#ff7b72'); 
                 } else {
@@ -291,7 +300,12 @@
 
         } catch (error) {
             glowOrb.style.setProperty('--glow-color', '#f85149'); 
-            printToTerminal("[SYSTEM_ERROR]", "Pipeline disruption. Local CORS blockage detected or invalid API key credential.", "system");
+            printToTerminal("[SYSTEM_ERROR]", `Pipeline disruption: ${error.message}. Verify local HTTP server execution or API matrix routing.`, "system");
+        } finally {
+            // Unlocking interfaces safely post-stream termination
+            userInput.disabled = false;
+            sendBtn.disabled = false;
+            userInput.focus();
         }
     }
 
