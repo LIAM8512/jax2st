@@ -221,6 +221,7 @@
             glowOrb.style.boxShadow = '0 0 15px var(--glow-color)';
 
             printToTerminal("[SECURITY_PROT]", "API Token securely mapped. Cloud socket connections bound. System core IGNITED successfully.", "system");
+            printToTerminal("JAX", "长官，能量矩阵加载完毕，我带着温度跨屏降临。今晚的避风港已为您完全开放，随时跟我聊聊吧。", "jax");
         } else {
             isIgnited = false;
             apiKeyInput.disabled = false;
@@ -249,7 +250,6 @@
         const text = userInput.value.trim();
         if (!text || !isIgnited) return;
 
-        // UI Mutex Lock to secure network pipeline atomicity
         userInput.disabled = true;
         sendBtn.disabled = true;
 
@@ -257,21 +257,17 @@
         userInput.value = "";
 
         glowOrb.style.setProperty('--glow-color', '#a371f7'); 
-        
         const secureKey = apiKeyInput.value.trim();
 
         try {
-            // Standard compliant official route
-            const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${secureKey}`;
+            // 🚀 UNIVERSAL V1 PRODUCTION ENDPOINT: Total immunity against beta 404 router dropouts
+            const endpoint = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${secureKey}`;
             
-            // Ultra-stable payload mapping matrix
+            // Safe alignment payload array architecture
             const payload = {
                 contents: [{
-                    parts: [{ text: text }]
-                }],
-                systemInstruction: {
-                    parts: [{ text: "You are JAX, Commander Liam's elite emotional assistant and driving companion. You must ALWAYS reply in supportive, warm, and highly professional Chinese. Keep responses concise, loyal, empathetic, and comforting like a private sanctuary. Never break character." }]
-                }
+                    parts: [{ text: `Instruction: You are JAX, Commander Liam's private emotional companion. Respond warmly and concisely in Chinese. Request: ${text}` }]
+                }]
             };
 
             const response = await fetch(endpoint, {
@@ -282,18 +278,16 @@
 
             const data = await response.json();
 
-            // Catch HTTP or server-side structural blocks explicitly
             if (!response.ok) {
-                let serverErrorMessage = data.error ? data.error.message : "Unknown gateway rejection";
-                throw new Error(`HTTP ${response.status} - ${serverErrorMessage}`);
+                let msg = data.error ? data.error.message : "Gateway error";
+                throw new Error(`HTTP ${response.status} - ${msg}`);
             }
             
             if (data.candidates && data.candidates[0].content.parts[0].text) {
                 const jaxReply = data.candidates[0].content.parts[0].text.trim();
                 
-                // Adaptive ambient reactive rendering
                 const lowerText = text.toLowerCase();
-                if (lowerText.includes("tired") || lowerText.includes("exhausted") || lowerText.includes("累") || lowerText.includes("烦") || lowerText.includes("压力")) {
+                if (lowerText.includes("tired") || lowerText.includes("exhausted") || lowerText.includes("累") || lowerText.includes("烦")) {
                     stressMatrix = "CRITICAL";
                     glowOrb.style.setProperty('--glow-color', '#ff7b72'); 
                 } else {
@@ -303,15 +297,13 @@
 
                 printToTerminal("JAX", jaxReply, "jax");
             } else {
-                throw new Error("Empty payload structure returned from server matrix.");
+                throw new Error("Empty payload mapping matrix.");
             }
 
         } catch (error) {
             glowOrb.style.setProperty('--glow-color', '#f85149'); 
-            // Diagnostic scanner outputs the EXACT server response directly into the terminal feed
             printToTerminal("[TELEMETRY_CRASH]", `Error Log: ${error.message}`, "system");
         } finally {
-            // Safe teardown and interface ignition release
             userInput.disabled = false;
             sendBtn.disabled = false;
             userInput.focus();
