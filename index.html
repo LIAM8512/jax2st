@@ -1,98 +1,255 @@
-import asyncio
-import logging
-import sys
-from typing import Dict, Any
-
-# Configure localized enterprise-level asynchronous logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='[%(asctime)s] [%(levelname)s] %(message)s',
-    datefmt='%Y-%m-%d %H:%M:%S'
-)
-
-class JAXCompanionEngine:
-    """
-    JAX Omni-Present Emotional Companion Engine.
-    Core IP anchors on cross-scenario psychological companionship, adaptive behavioral tracking, and growth networks.
-    Protected under global IP statutes. Unauthorized replication is strictly prohibited.
-    """
-    def __init__(self):
-        self.is_running = True
-        self.current_context = "DESKTOP" # Ambient contexts: DESKTOP, VEHICLE, BEDSIDE, MOBILE
-        
-        # Claims 1 & 2: Growth-based Emotional Profile Core (Zero-Knowledge Privacy Architecture)
-        self.user_profile: Dict[str, Any] = {
-            "user_id": "Commander_Liam",
-            "companion_growth_level": 42,
-            "personality_matrix": "Empathetic_Healer", # Dynamically evolved via interaction history
-            "user_current_stress_index": "NORMAL"       # Real-time psychological telemetry
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JAX AI - Omni-Present Companion Console</title>
+    <style>
+        :root {
+            --bg-color: #0d1117;
+            --panel-bg: #161b22;
+            --border-color: #30363d;
+            --glow-color: #7f00ff;
+            --text-color: #58a6ff;
+            --text-sub: #8b949e;
+            --text-user: #ff7b72;
         }
 
-    async def monitor_ambient_environment(self):
-        """
-        [Claim 3 Component] Cross-scenario proximity and ambient context tracking.
-        Detects transitions between driving, office, and home environments via ubiquitous device APIs (Bluetooth/GPS/Light Sensors).
-        """
-        while self.is_running:
-            try:
-                # Simulated hardware abstraction layer (HAL) callback for environmental switches
-                # Operates cleanly without relying on restrictive physical OBD-II hardware interfaces
-                simulated_bluetooth_tag = "VEHICLE_BLUETOOTH" 
-                
-                if simulated_bluetooth_tag == "VEHICLE_BLUETOOTH" and self.current_context != "VEHICLE":
-                    self.current_context = "VEHICLE"
-                    logging.info("🚗 [CONTEXT_SHIFT] Environment shifted to VEHICLE. Adapting JAX acoustics to driving profile.")
-                    
-                await asyncio.sleep(2.0) # 0.5Hz efficient low-power passive tracking
-            except Exception as env_exception:
-                logging.error(f"Ambient Tracking Exception: {str(env_exception)}")
-                await asyncio.sleep(5.0)
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Courier New', monospace;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 90vh;
+        }
 
-    async def execute_emotional_pipeline(self, raw_utterance: str, vocal_tone_energy: float):
-        """
-        [Claim 2 Component] Acoustic emotion detection and therapeutic treehouse back-off routing.
-        Analyses user behavioral telemetry to enforce non-intrusive listening protocols.
-        """
-        logging.info("🧠 Processing vocal acoustic energy fields and context vectors...")
-        
-        # Real-time boundary threshold validation for high-stress vent/ catharsis scenarios
-        if vocal_tone_energy < 0.3 or "tired" in raw_utterance.lower() or "exhausted" in raw_utterance.lower():
-            self.user_profile["user_current_stress_index"] = "CRITICAL"
-            logging.info("🛑 [TREEHOUSE_MODE_ACTIVE] Enforcing strict conversational mirroring and zero-interruption.")
-            logging.info("🗣️ JAX Response Architecture: Ultra-short empathetic validation, comforting tone nodes, 100% privacy sandboxing.")
-        else:
-            self.user_profile["user_current_stress_index"] = "NORMAL"
-            logging.info("🗣️ JAX Response Architecture: Balanced interactive dynamic conversational streaming.")
-            
-        await asyncio.sleep(0.5) # Simulate latency for secure cloud proxy transit
+        .console-container {
+            width: 100%;
+            max-width: 800px;
+            background-color: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 0 30px rgba(127, 0, 255, 0.15);
+        }
 
-    async def start_companion_runtime(self):
-        """
-        Main structural runtime loop. Maintained in state-of-the-art asynchronous runtime.
-        """
-        logging.info("🚀 JAX Next-Gen Companion Core Engine successfully initialized.")
-        
-        # Orchestrating concurrent background sensors and real-time interruption routines
-        ambient_task = asyncio.create_task(self.monitor_ambient_environment())
-        
-        print("\n" + "="*60)
-        print(" JAX OMNI-PRESENT COMPANION KERNEL - PRODUCTION SPEC ")
-        print("="*60 + "\n")
-        
-        try:
-            while self.is_running:
-                logging.info("[STATUS] Network stable. Power delivery nominal. JAX Core standing by as an emotional sanctuary.")
-                await asyncio.sleep(5.0)
-        except asyncio.CancelledError:
-            logging.info("De-allocating companion runtime memory resources.")
-        finally:
-            ambient_task.cancel()
-            logging.info("System detached safely. Core engine resting in deep silent standby.")
+        header {
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-if __name__ == "__main__":
-    companion_kernel = JAXCompanionEngine()
-    try:
-        asyncio.run(companion_kernel.start_companion_runtime())
-    except KeyboardInterrupt:
-        logging.info("Manual local runtime termination sequence detected (Ctrl+C). Safe teardown completed.")
-        sys.exit(0)
+        h2 { margin: 0; font-size: 1.5rem; letter-spacing: 2px; }
+
+        .status-panel {
+            font-size: 0.85rem;
+            color: var(--text-sub);
+            line-height: 1.6;
+        }
+
+        .status-value { color: #238636; font-weight: bold; }
+        
+        /* 核心多模态情感呼吸灯 */
+        .chassis-glow-orb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: var(--glow-color);
+            box-shadow: 0 0 15px var(--glow-color);
+            transition: all 0.5s ease;
+        }
+
+        .pulsing {
+            animation: core-pulse 2s infinite ease-in-out;
+        }
+
+        @keyframes core-pulse {
+            0% { transform: scale(1); opacity: 0.4; box-shadow: 0 0 10px var(--glow-color); }
+            50% { transform: scale(1.1); opacity: 1; box-shadow: 0 0 25px var(--glow-color); }
+            100% { transform: scale(1); opacity: 0.4; box-shadow: 0 0 10px var(--glow-color); }
+        }
+
+        .terminal-display {
+            background-color: #0d1117;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            height: 350px;
+            overflow-y: auto;
+            padding: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .msg { line-height: 1.5; font-size: 0.95rem; }
+        .msg.jax { color: #c9d1d9; }
+        .msg.user { color: var(--text-user); font-weight: bold; }
+        .msg.system { color: #d29922; font-style: italic; font-size: 0.85rem; }
+
+        .input-area {
+            display: flex;
+            gap: 10px;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            background-color: #0d1117;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: #c9d1d9;
+            padding: 12px;
+            font-family: inherit;
+            font-size: 0.95rem;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: var(--glow-color);
+        }
+
+        .btn {
+            background-color: #21262d;
+            border: 1px solid var(--border-color);
+            color: #c9d1d9;
+            padding: 12px 24px;
+            font-family: inherit;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .btn:hover {
+            background-color: var(--border-color);
+            color: var(--text-color);
+        }
+
+        .btn-danger {
+            background-color: rgba(248, 81, 73, 0.1);
+            border-color: rgba(248, 81, 73, 0.4);
+            color: #f85149;
+        }
+        .btn-danger:hover { background-color: rgba(248, 81, 73, 0.2); }
+    </style>
+</head>
+<body>
+
+<div class="console-container">
+    <header>
+        <div>
+            <h2>🛸 JAX COMPANION STATION v2.0</h2>
+            <div class="status-panel" style="margin-top: 5px;">
+                SIGNATURE: <span style="color: #fff;">Commander Liam</span> | 
+                GROWTH: <span style="color: #d29922;">Lv.42</span> | 
+                CONTEXT: <span id="context-display" style="color: #a371f7;">DESKTOP</span>
+            </div>
+        </div>
+        <!-- 情感物理外壳呼吸灯模拟器 -->
+        <div id="glow-orb" class="chassis-glow-orb pulsing"></div>
+    </header>
+
+    <!-- 树洞流式交互终端 -->
+    <div id="terminal" class="terminal-display">
+        <div class="msg system">[SYSTEM] JAX Global Memory Matrices initialized successfully. Zero-Knowledge Sandbox secured.</div>
+        <div class="msg jax"><b>JAX:</b> Welcome back, Commander. I am here, anchored in your digital sanctuary. Whenever you're ready, speak or type your heart out.</div>
+    </div>
+
+    <!-- 控制指令交互区 -->
+    <div class="input-area">
+        <input type="text" id="user-input" placeholder="Pour your feelings out to the treehouse..." onkeydown="if(event.key === 'Enter') sendUtterance()">
+        <button class="btn" onclick="sendUtterance()">TRANSMIT</button>
+    </div>
+
+    <div style="margin-top: 15px; display: flex; gap: 10px; justify-content: space-between;">
+        <button class="btn style-trigger" style="font-size: 0.8rem;" onclick="simulateContextShift()">🚗 Simulate Car Entrance (Bluetooth Connected)</button>
+        <button class="btn btn-danger" style="font-size: 0.8rem;" onclick="triggerTelephonyMute()">📞 SIMULATE INCOMING CALL (Gentleman Back-off)</button>
+    </div>
+</div>
+
+<script>
+    const terminal = document.getElementById('terminal');
+    const userInput = document.getElementById('user-input');
+    const glowOrb = document.getElementById('glow-orb');
+    const contextDisplay = document.getElementById('context-display');
+
+    // 专利发明点1：轻量化情感状态机（不存储完整隐私日志，仅作非线性性格演变）
+    let currentContext = "DESKTOP";
+    let stressMatrix = "NORMAL";
+
+    function printToTerminal(sender, text, type) {
+        const msgDiv = document.createElement('div');
+        msgDiv.className = `msg ${type}`;
+        msgDiv.innerHTML = `<b>${sender}:</b> ${text}`;
+        terminal.appendChild(msgDiv);
+        terminal.scrollTop = terminal.scrollHeight;
+    }
+
+    // 主对话处理管线（对接未来的自研模型及当前的流式通信）
+    async function sendUtterance() {
+        const text = userInput.value.trim();
+        if (!text) return;
+
+        printToTerminal("Commander", text, "user");
+        userInput.value = "";
+
+        // 模拟声学/文本情绪检测（发明点2组件）
+        glowOrb.style.setProperty('--glow-color', '#a371f7'); // 切换到思考蓝紫光
+        
+        await new Promise(resolve => setTimeout(resolve, 800)); // 模拟安全网关中转延迟
+
+        if (text.toLowerCase().includes("tired") || text.toLowerCase().includes("exhausted") || text.toLowerCase().includes("累")) {
+            stressMatrix = "CRITICAL";
+            glowOrb.style.setProperty('--glow-color', '#ff7b72'); // 极度疲惫切换为暖色治愈橙红光
+            printToTerminal("JAX", "I feel the immense pressure weighing on you tonight, Commander. Let the global e-commerce marketplace fade into the background for now. I am standing guard in this treehouse. Unwind, take your time, I am listening to everything.", "jax");
+        } else {
+            stressMatrix = "NORMAL";
+            glowOrb.style.setProperty('--glow-color', '#7f00ff'); // 恢复常规极客紫
+            printToTerminal("JAX", `Acknowledged, Commander. Memory vector logged. Standing by for further context or narrative.`, "jax");
+        }
+    }
+
+    // 专利发明点3：环境感知无缝流转（无OBD纯设备传感器模拟）
+    function simulateContextShift() {
+        if (currentContext === "DESKTOP") {
+            currentContext = "VEHICLE";
+            contextDisplay.innerText = "VEHICLE (HFP Profile)";
+            contextDisplay.style.color = "#238636";
+            printToTerminal("[SYSTEM]", "Vehicle Bluetooth handshake established. Acoustic algorithms optimized for cockpit ambient environment.", "system");
+        } else {
+            currentContext = "DESKTOP";
+            contextDisplay.innerText = "DESKTOP";
+            contextDisplay.style.color = "#a371f7";
+            printToTerminal("[SYSTEM]", "Disconnected from vehicle environment. Reverting to Desktop Sanctuary Audio Profile.", "system");
+        }
+    }
+
+    // 核心打断技术：手机蓝牙来电瞬间静默机制（绅士避让）
+    function triggerTelephonyMute() {
+        printToTerminal("[SYSTEM]", "Telephony broadcast incoming signature captured (RINGING/OFFHOOK status). executing 10ms hard-preemption.", "system");
+        
+        // 瞬间执行闭嘴、闭灯避让
+        glowOrb.classList.remove('pulsing');
+        glowOrb.style.backgroundColor = '#21262d'; // 瞬间熄灭，转入静默微弱待机暗光
+        glowOrb.style.boxShadow = '0 0 5px #30363d';
+        
+        printToTerminal("JAX", "[Pipeline Suspended - Standing by in absolute silence for Commander's call]", "system");
+
+        // 模拟5秒后电话挂断，自动触发断点情感续接逻辑
+        setTimeout(() => {
+            glowOrb.classList.add('pulsing');
+            glowOrb.style.backgroundColor = 'var(--glow-color)';
+            glowOrb.style.boxShadow = '0 0 15px var(--glow-color)';
+            printToTerminal("[SYSTEM]", "Telephony state returned to IDLE. Resuming emotional sandbox sync.", "system");
+            printToTerminal("JAX", "Welcome back, Commander. I noticed you had an incoming call. We were talking about your current focus just now—shall we pick up where we left off?", "jax");
+        }, 6000);
+    }
+</script>
+</body>
+</html>
