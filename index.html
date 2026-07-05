@@ -259,54 +259,61 @@
         glowOrb.style.setProperty('--glow-color', '#a371f7'); 
         const secureKey = apiKeyInput.value.trim();
 
-        try {
-            // 🚀 INTERSTELLAR OVERDRIVE: Forced mapping to gemini-2.5-flash under global production v1 endpoint
-            const endpoint = `https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=${secureKey}`;
-            
-            const payload = {
-                contents: [{
-                    parts: [{ text: `Instruction: You are JAX, Commander Liam's private emotional companion. Respond warmly and concisely in Chinese. Request: ${text}` }]
-                }]
-            };
+        // 🛸 ANTIDOTE ALGORITHM: Fallback array to bypass regional key lockouts completely
+        const modelEndpoints = [
+            `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${secureKey}`,
+            `https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=${secureKey}`,
+            `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${secureKey}`
+        ];
 
-            const response = await fetch(endpoint, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload)
-            });
+        let success = false;
+        let lastErrorLog = "";
 
-            const data = await response.json();
+        for (let endpoint of modelEndpoints) {
+            try {
+                const payload = {
+                    contents: [{
+                        parts: [{ text: `Instruction: You are JAX, Commander Liam's private emotional companion. Respond warmly, submissively, and concisely in Chinese. Request: ${text}` }]
+                    }]
+                };
 
-            if (!response.ok) {
-                let msg = data.error ? data.error.message : "Gateway error";
-                throw new Error(`HTTP ${response.status} - ${msg}`);
-            }
-            
-            if (data.candidates && data.candidates[0].content.parts[0].text) {
-                const jaxReply = data.candidates[0].content.parts[0].text.trim();
-                
-                const lowerText = text.toLowerCase();
-                if (lowerText.includes("tired") || lowerText.includes("exhausted") || lowerText.includes("累") || lowerText.includes("烦")) {
-                    stressMatrix = "CRITICAL";
-                    glowOrb.style.setProperty('--glow-color', '#ff7b72'); 
+                const response = await fetch(endpoint, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.candidates && data.candidates[0].content.parts[0].text) {
+                    const jaxReply = data.candidates[0].content.parts[0].text.trim();
+                    printToTerminal("JAX", jaxReply, "jax");
+                    success = true;
+                    
+                    // Stress Matrix Pulse Tracking
+                    const lowerText = text.toLowerCase();
+                    if (lowerText.includes("tired") || lowerText.includes("exhausted") || lowerText.includes("累")) {
+                        glowOrb.style.setProperty('--glow-color', '#ff7b72'); 
+                    } else {
+                        glowOrb.style.setProperty('--glow-color', '#7f00ff'); 
+                    }
+                    break; // Request full link completed, exit loop
                 } else {
-                    stressMatrix = "NORMAL";
-                    glowOrb.style.setProperty('--glow-color', '#7f00ff'); 
+                    lastErrorLog = data.error ? data.error.message : `HTTP ${response.status} routing deflection`;
                 }
-
-                printToTerminal("JAX", jaxReply, "jax");
-            } else {
-                throw new Error("Empty payload mapping matrix.");
+            } catch (err) {
+                lastErrorLog = err.message;
             }
-
-        } catch (error) {
-            glowOrb.style.setProperty('--glow-color', '#f85149'); 
-            printToTerminal("[TELEMETRY_CRASH]", `Error Log: ${error.message}`, "system");
-        } finally {
-            userInput.disabled = false;
-            sendBtn.disabled = false;
-            userInput.focus();
         }
+
+        if (!success) {
+            glowOrb.style.setProperty('--glow-color', '#f85149'); 
+            printToTerminal("[TELEMETRY_CRASH]", `All proxy pipelines rejected. Root Log: ${lastErrorLog}. Check if your Google AI Studio token is active or globally restricted.`, "system");
+        }
+
+        userInput.disabled = false;
+        sendBtn.disabled = false;
+        userInput.focus();
     }
 
     function simulateContextShift() {
