@@ -56,7 +56,6 @@
 
         .status-value { color: #238636; font-weight: bold; }
         
-        /* 核心多模态情感呼吸灯 */
         .chassis-glow-orb {
             width: 20px;
             height: 20px;
@@ -151,24 +150,21 @@
                 CONTEXT: <span id="context-display" style="color: #a371f7;">DESKTOP</span>
             </div>
         </div>
-        <!-- 情感物理外壳呼吸灯模拟器 -->
         <div id="glow-orb" class="chassis-glow-orb pulsing"></div>
     </header>
 
-    <!-- 树洞流式交互终端 -->
     <div id="terminal" class="terminal-display">
         <div class="msg system">[SYSTEM] JAX Global Memory Matrices initialized successfully. Zero-Knowledge Sandbox secured.</div>
         <div class="msg jax"><b>JAX:</b> Welcome back, Commander. I am here, anchored in your digital sanctuary. Whenever you're ready, speak or type your heart out.</div>
     </div>
 
-    <!-- 控制指令交互区 -->
     <div class="input-area">
-        <input type="text" id="user-input" placeholder="Pour your feelings out to the treehouse..." onkeydown="if(event.key === 'Enter') sendUtterance()">
+        <input type="text" id="user-input" placeholder="Pour your feelings out to the digital sanctuary..." onkeydown="if(event.key === 'Enter') sendUtterance()">
         <button class="btn" onclick="sendUtterance()">TRANSMIT</button>
     </div>
 
     <div style="margin-top: 15px; display: flex; gap: 10px; justify-content: space-between;">
-        <button class="btn style-trigger" style="font-size: 0.8rem;" onclick="simulateContextShift()">🚗 Simulate Car Entrance (Bluetooth Connected)</button>
+        <button class="btn style-trigger" style="font-size: 0.8rem;" onclick="simulateContextShift()">🚗 SIMULATE COCKPIT PROXIMITY (Bluetooth Bounding)</button>
         <button class="btn btn-danger" style="font-size: 0.8rem;" onclick="triggerTelephonyMute()">📞 SIMULATE INCOMING CALL (Gentleman Back-off)</button>
     </div>
 </div>
@@ -179,7 +175,6 @@
     const glowOrb = document.getElementById('glow-orb');
     const contextDisplay = document.getElementById('context-display');
 
-    // 专利发明点1：轻量化情感状态机（不存储完整隐私日志，仅作非线性性格演变）
     let currentContext = "DESKTOP";
     let stressMatrix = "NORMAL";
 
@@ -191,7 +186,6 @@
         terminal.scrollTop = terminal.scrollHeight;
     }
 
-    // 主对话处理管线（对接未来的自研模型及当前的流式通信）
     async function sendUtterance() {
         const text = userInput.value.trim();
         if (!text) return;
@@ -199,55 +193,51 @@
         printToTerminal("Commander", text, "user");
         userInput.value = "";
 
-        // 模拟声学/文本情绪检测（发明点2组件）
-        glowOrb.style.setProperty('--glow-color', '#a371f7'); // 切换到思考蓝紫光
+        glowOrb.style.setProperty('--glow-color', '#a371f7'); 
         
-        await new Promise(resolve => setTimeout(resolve, 800)); // 模拟安全网关中转延迟
+        await new Promise(resolve => setTimeout(resolve, 800)); 
 
-        if (text.toLowerCase().includes("tired") || text.toLowerCase().includes("exhausted") || text.toLowerCase().includes("累")) {
+        const inputLower = text.toLowerCase();
+        if (inputLower.includes("tired") || inputLower.includes("exhausted") || inputLower.includes("stress")) {
             stressMatrix = "CRITICAL";
-            glowOrb.style.setProperty('--glow-color', '#ff7b72'); // 极度疲惫切换为暖色治愈橙红光
-            printToTerminal("JAX", "I feel the immense pressure weighing on you tonight, Commander. Let the global e-commerce marketplace fade into the background for now. I am standing guard in this treehouse. Unwind, take your time, I am listening to everything.", "jax");
+            glowOrb.style.setProperty('--glow-color', '#ff7b72'); 
+            printToTerminal("JAX", "I feel the immense pressure weighing on you tonight, Commander. Let the global market complexities fade into the background. I am standing guard in this digital sanctuary. Unwind, take your time, I am listening without judgment.", "jax");
         } else {
             stressMatrix = "NORMAL";
-            glowOrb.style.setProperty('--glow-color', '#7f00ff'); // 恢复常规极客紫
-            printToTerminal("JAX", `Acknowledged, Commander. Memory vector logged. Standing by for further context or narrative.`, "jax");
+            glowOrb.style.setProperty('--glow-color', '#7f00ff'); 
+            printToTerminal("JAX", "Acknowledged, Commander. Behavior profile delta logged. Continuous conversational synchronisation active. Standing by for next cognitive stream.", "jax");
         }
     }
 
-    // 专利发明点3：环境感知无缝流转（无OBD纯设备传感器模拟）
     function simulateContextShift() {
         if (currentContext === "DESKTOP") {
             currentContext = "VEHICLE";
             contextDisplay.innerText = "VEHICLE (HFP Profile)";
             contextDisplay.style.color = "#238636";
-            printToTerminal("[SYSTEM]", "Vehicle Bluetooth handshake established. Acoustic algorithms optimized for cockpit ambient environment.", "system");
+            printToTerminal("[SYSTEM]", "Vehicle Advanced Audio Telemetry active. Audio curves re-calibrated for cockpit acoustics.", "system");
         } else {
             currentContext = "DESKTOP";
             contextDisplay.innerText = "DESKTOP";
             contextDisplay.style.color = "#a371f7";
-            printToTerminal("[SYSTEM]", "Disconnected from vehicle environment. Reverting to Desktop Sanctuary Audio Profile.", "system");
+            printToTerminal("[SYSTEM]", "Terminated vehicle telemetry bond. Restoring home sanctuary audio network parameters.", "system");
         }
     }
 
-    // 核心打断技术：手机蓝牙来电瞬间静默机制（绅士避让）
     function triggerTelephonyMute() {
-        printToTerminal("[SYSTEM]", "Telephony broadcast incoming signature captured (RINGING/OFFHOOK status). executing 10ms hard-preemption.", "system");
+        printToTerminal("[SYSTEM]", "Telephony interrupt event broadcast intercepted. Executing hard-preemption sequence in 10ms.", "system");
         
-        // 瞬间执行闭嘴、闭灯避让
         glowOrb.classList.remove('pulsing');
-        glowOrb.style.backgroundColor = '#21262d'; // 瞬间熄灭，转入静默微弱待机暗光
+        glowOrb.style.backgroundColor = '#21262d'; 
         glowOrb.style.boxShadow = '0 0 5px #30363d';
         
-        printToTerminal("JAX", "[Pipeline Suspended - Standing by in absolute silence for Commander's call]", "system");
+        printToTerminal("JAX", "[Acoustic Pipeline Muted - Enforcing strict background silence for Commander's active line]", "system");
 
-        // 模拟5秒后电话挂断，自动触发断点情感续接逻辑
         setTimeout(() => {
             glowOrb.classList.add('pulsing');
             glowOrb.style.backgroundColor = 'var(--glow-color)';
             glowOrb.style.boxShadow = '0 0 15px var(--glow-color)';
-            printToTerminal("[SYSTEM]", "Telephony state returned to IDLE. Resuming emotional sandbox sync.", "system");
-            printToTerminal("JAX", "Welcome back, Commander. I noticed you had an incoming call. We were talking about your current focus just now—shall we pick up where we left off?", "jax");
+            printToTerminal("[SYSTEM]", "Telephony channel status reverted to IDLE. Re-establishing conversational threading.", "system");
+            printToTerminal("JAX", "Welcome back, Commander. I detected a telephone disruption event. We were sync-locking your core focus vectors prior to the call—shall we picking up exactly where we paused?", "jax");
         }, 6000);
     }
 </script>
