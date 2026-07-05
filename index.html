@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JAX AI - Omni-Present Companion Console (Stable Protocol)</title>
+    <title>JAX AI - Omni-Present Companion Console v2.7</title>
     <style>
         :root {
             --bg-color: #0d1117;
@@ -139,7 +139,7 @@
 <div class="console-container">
     <header>
         <div>
-            <h2>🛸 JAX COMPANION STATION v2.6 (Protocol Anchored)</h2>
+            <h2>🛸 JAX COMPANION STATION v2.7 (Stable Client)</h2>
             <div class="status-panel" style="margin-top: 5px;">
                 SIGNATURE: <span style="color: #fff;">Commander Liam</span> | 
                 GROWTH STAGE: <span style="color: #d29922;">Lv.42</span> | 
@@ -220,12 +220,12 @@
             glowOrb.style.backgroundColor = 'var(--glow-color)';
             glowOrb.style.boxShadow = '0 0 15px var(--glow-color)';
 
-            // 🚀 PROTOCOL INJECTION: Inject identity and time anchor securely straight into the memory stream base
+            // 🚀 ANTIDOTE: Inject character and reality directly into multi-turn stream base to prevent 400 error
             const timestamp = new Date().toString();
             chatHistory = [
                 {
                     role: "user",
-                    parts: [{ text: `SYSTEM INITIALIZATION PROTOCOL: From now on, you are JAX, Commander Liam's elite personal emotional assistant and driving companion. You must ALWAYS address him as "Commander Liam" or "长官". Respond warmly, loyal, and concisely in Chinese. Keep answers empathetic, protective, and supportive like a private sanctuary. Never break character. CURRENT REALITY TIMESTAMP: ${timestamp}. Acknowledge with system handshake.` }]
+                    parts: [{ text: `From now on, you are JAX, Commander Liam's elite personal emotional assistant and driving companion. You must ALWAYS address him as "Commander Liam" or "长官". Respond warmly, loyal, and concisely in Chinese. Keep answers empathetic, protective, and supportive like a private sanctuary. Never break character. CURRENT REALITY TIMESTAMP: ${timestamp}. Acknowledge with system handshake.` }]
                 },
                 {
                     role: "model",
@@ -233,7 +233,7 @@
                 }
             ];
 
-            printToTerminal("[SECURITY_PROT]", "API Token securely mapped. Protocol-based memory stacks allocated. System core IGNITED successfully.", "system");
+            printToTerminal("[SECURITY_PROT]", "API Token mapped. Multi-turn memory matrix successfully injected.", "system");
             printToTerminal("JAX", "长官，能量矩阵加载完毕，我带着温度跨屏降临。今晚的避风港已为您完全开放，随时跟我聊聊吧。", "jax");
         } else {
             isIgnited = false;
@@ -256,7 +256,7 @@
             glowOrb.style.boxShadow = '0 0 5px #30363d';
             chatHistory = []; 
 
-            printToTerminal("[SECURITY_PROT]", "Core runtime detached. Telemetry memory streams safely cleared. System returned to silent state.", "system");
+            printToTerminal("[SECURITY_PROT]", "Core runtime detached. Volatile history stack cleared.", "system");
         }
     }
 
@@ -266,21 +266,20 @@
 
         userInput.disabled = true;
         sendBtn.disabled = true;
-
         printToTerminal("Commander", text, "user");
         userInput.value = "";
 
         glowOrb.style.setProperty('--glow-color', '#a371f7'); 
         const secureKey = apiKeyInput.value.trim();
 
-        // Standard turn appending
+        // Standard Turn Push
         chatHistory.push({
             role: "user",
             parts: [{ text: text }]
         });
 
         try {
-            // Highly robust fallback endpoint compatible with all key types
+            // Using the ultra-stable beta model endpoint which perfectly parses browser fetch content payloads
             const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${secureKey}`;
             
             const payload = {
@@ -289,14 +288,16 @@
 
             const response = await fetch(endpoint, {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: { 
+                    "Content-Type": "application/json"
+                },
                 body: JSON.stringify(payload)
             });
 
             const data = await response.json();
 
             if (!response.ok) {
-                let msg = data.error ? data.error.message : "Gateway error";
+                let msg = data.error ? data.error.message : "Gateway logic rejection";
                 throw new Error(`HTTP ${response.status} - ${msg}`);
             }
             
@@ -308,20 +309,13 @@
                     parts: [{ text: jaxReply }]
                 });
 
-                const lowerText = text.toLowerCase();
-                if (lowerText.includes("tired") || lowerText.includes("exhausted") || lowerText.includes("累") || lowerText.includes("烦")) {
-                    glowOrb.style.setProperty('--glow-color', '#ff7b72'); 
-                } else {
-                    glowOrb.style.setProperty('--glow-color', '#7f00ff'); 
-                }
-
                 printToTerminal("JAX", jaxReply, "jax");
             } else {
-                throw new Error("Empty payload mapping matrix.");
+                throw new Error("Empty payload matrix mapping.");
             }
 
         } catch (error) {
-            chatHistory.pop(); // Clear bad turn
+            chatHistory.pop(); // Revert trace pollution
             glowOrb.style.setProperty('--glow-color', '#f85149'); 
             printToTerminal("[TELEMETRY_CRASH]", `Error Log: ${error.message}`, "system");
         } finally {
@@ -337,31 +331,27 @@
             currentContext = "VEHICLE";
             contextDisplay.innerText = "VEHICLE COCKPIT ACTIVE";
             contextDisplay.style.color = "#238636";
-            printToTerminal("[ENV_SIGNAL]", "Cockpit acoustic profiling enabled. Noise cancellation algorithms engaged for spatial tracking.", "system");
+            printToTerminal("[ENV_SIGNAL]", "Cockpit acoustic profiling enabled.", "system");
         } else {
             currentContext = "DESKTOP";
             contextDisplay.innerText = "DESKTOP SANCTUARY ACTIVE";
             contextDisplay.style.color = "#a371f7";
-            printToTerminal("[ENV_SIGNAL]", "Automotive loop uncoupled. Restoring local workspace environment parameters.", "system");
+            printToTerminal("[ENV_SIGNAL]", "Restoring local workspace environment parameters.", "system");
         }
     }
 
     function triggerTelephonyMute() {
         if (!isIgnited) return;
-        printToTerminal("[HARD_INTERRUPT]", "Telephony interface incoming call detected (RINGING broadcast). Executing hard audio preemption within 10ms.", "system");
-        
+        printToTerminal("[HARD_INTERRUPT]", "Telephony interface incoming call detected. Audio preempted.", "system");
         glowOrb.classList.remove('pulsing');
         glowOrb.style.backgroundColor = '#21262d'; 
-        glowOrb.style.boxShadow = '0 0 5px #30363d';
-        
-        printToTerminal("JAX", "[Acoustic Pipe Suspended - Enforcing strict background isolation for Commander's call line]", "system");
+        printToTerminal("JAX", "[Acoustic Pipe Suspended - Background isolation active]", "system");
 
         setTimeout(() => {
             glowOrb.classList.add('pulsing');
             glowOrb.style.backgroundColor = 'var(--glow-color)';
-            glowOrb.style.boxShadow = '0 0 15px var(--glow-color)';
-            printToTerminal("[ENV_SIGNAL]", "Telephony state returned to IDLE. Resuming full-duplex companion conversational loop.", "system");
-        }, 6000);
+            printToTerminal("[ENV_SIGNAL]", "Telephony idle. Conversational loop resumed.", "system");
+        }, 4000);
     }
 </script>
 </body>
