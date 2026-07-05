@@ -260,8 +260,8 @@
         const secureKey = apiKeyInput.value.trim();
 
         try {
-            // 🚀 FIXED MODEL ID: Swapped to 'gemini-1.5-flash-latest' to fully eliminate the 404 ModelService rejection block
-            const endpoint = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash-latest:generateContent?key=${secureKey}`;
+            // 🚀 INTERSTELLAR OVERDRIVE: Forced mapping to gemini-2.5-flash under global production v1 endpoint
+            const endpoint = `https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=${secureKey}`;
             
             const payload = {
                 contents: [{
